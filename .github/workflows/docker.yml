@@ -15,7 +15,7 @@ env:
 
 jobs:
   build-and-push-image:
-    if: github.repository == 'konide20/restic'
+    if: github.repository == 'konidev20/restic'
     runs-on: ubuntu-latest
     permissions:
       contents: read
