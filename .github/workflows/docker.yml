@@ -68,10 +68,12 @@ jobs:
           push: true
           context: .
           file: docker/Dockerfile.release
+          platforms: linux/386,linux/amd64,linux/arm,linux/arm64
           pull: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          provenance: false
+          provenance: true
+          sbom: true
         
       - name: Output image
         id: image
@@ -81,17 +83,17 @@ jobs:
           image_name="${REGISTRY}/${IMAGE_NAME}"
           echo "image=$image_name" >> "$GITHUB_OUTPUT"
         
-  provenance:
-    needs: [build-and-push-image]
-    permissions:
-      actions: read # for detecting the Github Actions environment.
-      id-token: write # for creating OIDC tokens for signing.
-      packages: write # for uploading attestations.
-    if: github.repository == 'konidev20/restic'
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.0.0
-    with:
-      image: ${{ needs.build-and-push-image.outputs.image }}
-      digest: ${{ needs.build-and-push-image.outputs.digest }}
-      registry-username: ${{ github.actor }}
-    secrets:
-      registry-password: ${{ secrets.GITHUB_TOKEN }}
+  # provenance:
+  #   needs: [build-and-push-image]
+  #   permissions:
+  #     actions: read # for detecting the Github Actions environment.
+  #     id-token: write # for creating OIDC tokens for signing.
+  #     packages: write # for uploading attestations.
+  #   if: github.repository == 'konidev20/restic'
+  #   uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.0.0
+  #   with:
+  #     image: ${{ needs.build-and-push-image.outputs.image }}
+  #     digest: ${{ needs.build-and-push-image.outputs.digest }}
+  #     registry-username: ${{ github.actor }}
+  #   secrets:
+  #     registry-password: ${{ secrets.GITHUB_TOKEN }}
